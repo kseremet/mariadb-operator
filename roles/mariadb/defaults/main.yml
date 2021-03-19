@@ -1,0 +1,17 @@
+---
+# defaults file for MariaDB
+user: ansible
+image: quay.io/koray/centos-stream:8
+cores: 1
+sockets: 1
+memory: 1Gi
+running: true
+ports:
+ - 22
+ - 3306
+name_suffix: master
+number_of_slaves: 0
+enable_replication: no
+slave_cores: 1
+slave_memory: 1Gi
+

@@ -1,0 +1,122 @@
+apiVersion: operators.coreos.com/v1alpha1
+kind: ClusterServiceVersion
+metadata:
+  annotations:
+    alm-examples: '[]'
+    capabilities: Basic Install
+  name: mariadb-operator.v0.0.0
+  namespace: placeholder
+spec:
+  apiservicedefinitions: {}
+  customresourcedefinitions:
+    owned:
+    - kind: MariaDB
+      name: mariadbs.db.koray.test
+      specDescriptors:
+      - description: Set this true to keep the VM running
+        displayName: Power On VM
+        path: running
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
+      - description: Select an existing kubernetes secret that contains id_rsa and id_rsa.pub files
+        displayName: SSH Secret
+        path: sshSecret
+        x-descriptors:
+        - urn:alm:descriptor:io.kubernetes:Secret
+      - description: Specify the default user that will be created by the cloud-init
+        displayName: User Name
+        path: user
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:text
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+      - description: Optional. Enter a password here if you want to set the root password of the VM.
+        displayName: User Password
+        path: password
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:password
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+      - description: Select the number of cores the VM will have
+        displayName: Number of Cores
+        path: cores
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:select:1
+        - urn:alm:descriptor:com.tectonic.ui:select:2
+        - urn:alm:descriptor:com.tectonic.ui:select:4
+        - urn:alm:descriptor:com.tectonic.ui:select:8
+      - description: Select the amount of memory the VM will have
+        displayName: Amount of Memory
+        path: memory
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:select:1Gi
+        - urn:alm:descriptor:com.tectonic.ui:select:4Gi
+        - urn:alm:descriptor:com.tectonic.ui:select:8Gi
+        - urn:alm:descriptor:com.tectonic.ui:select:16Gi
+      - description: Select the number of virtual sockets the VM will have
+        displayName: Number of Sockets
+        path: sockets
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:select:1
+        - urn:alm:descriptor:com.tectonic.ui:select:2
+        - urn:alm:descriptor:com.tectonic.ui:select:4
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+      - description: Set this true to create slave vms and start database replication
+        displayName: Database Replication
+        path: enableReplication
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
+      - description: Specify the number of slave vms to provision
+        displayName: Number of Slaves
+        path: numberOfSlaves
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:podCount
+        - urn:alm:descriptor:com.tectonic.ui:fieldDependency:enableReplication:true
+      - description: Select the number of cores the slave VMs will have
+        displayName: Slave Cores
+        path: slaveCores
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:fieldDependency:enableReplication:true
+        - urn:alm:descriptor:com.tectonic.ui:select:1
+        - urn:alm:descriptor:com.tectonic.ui:select:2
+        - urn:alm:descriptor:com.tectonic.ui:select:4
+        - urn:alm:descriptor:com.tectonic.ui:select:8
+      - description: Select the amount of memory the slave VMs will have
+        displayName: Slave Memory
+        path: slaveMemory
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:fieldDependency:enableReplication:true
+        - urn:alm:descriptor:com.tectonic.ui:select:1Gi
+        - urn:alm:descriptor:com.tectonic.ui:select:4Gi
+        - urn:alm:descriptor:com.tectonic.ui:select:8Gi
+        - urn:alm:descriptor:com.tectonic.ui:select:16Gi
+      version: v1alpha1
+  description: An operator to deploy mariadb inside a virtual machine on Kubevirt
+  displayName: MariaDB Operator
+  icon:
+  - base64data: PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGlkPSJMYXllcl8xIiBkYXRhLW5hbWU9IkxheWVyIDEiIHZpZXdCb3g9IjAgMCAzMDkuODggMjUyLjcyIj4KICA8ZGVmcz4KICAgIDxzdHlsZT4uY2xzLTF7ZmlsbDojMjMxZjIwO308L3N0eWxlPgogIDwvZGVmcz4KICA8dGl0bGU+TURCLVZMb2dvX0JsYWNrPC90aXRsZT4KICA8cGF0aCBjbGFzcz0iY2xzLTEiIGQ9Ik02My42MiwyMTcuNiw3NC45LDI2MS4xNkg2Ni4zOWwtNy41NC0zMS4zN0w0NC43MywyNjEuMTZIMzcuNTVMMjMuNSwyMzBsLTcuNzIsMzEuMTlINy40NUwxOC42MSwyMTcuNkgyNmwxNS4yMSwzMy43M0w1Ni4zMiwyMTcuNloiIHRyYW5zZm9ybT0idHJhbnNsYXRlKC03LjQ1IC05LjEpIj48L3BhdGg+CiAgPHBhdGggY2xhc3M9ImNscy0xIiBkPSJNMTA3LDIzNC40NHYtNS4wN2g4LjJ2MzEuNzlIMTA3VjI1NmMtMi4xOCwzLjY5LTYuNjQsNS44LTEyLjA3LDUuOC0xMS4zNCwwLTE3LjY4LTgtMTcuNjgtMTcuMiwwLTguODcsNi0xNiwxNi40Ny0xNkM5OS42OCwyMjguNjUsMTA0LjYzLDIzMC43LDEwNywyMzQuNDRaTTg2LDI0NS4wNmMwLDUuODUsMy42OCwxMC44NSwxMC44LDEwLjg1LDYuODgsMCwxMC42Mi00Ljg4LDEwLjYyLTEwLjY3cy0zLjg2LTEwLjc0LTExLTEwLjc0Qzg5LjU1LDIzNC41LDg2LDIzOS40NCw4NiwyNDUuMDZaIiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgtNy40NSAtOS4xKSI+PC9wYXRoPgogIDxwYXRoIGNsYXNzPSJjbHMtMSIgZD0iTTEzMy43LDI2MS4xNmgtOC4yVjIyOS4zN2g4LjJ2Ny4xMmExMi42LDEyLjYsMCwwLDEsMTEuNDctNy44NCwxNC43NSwxNC43NSwwLDAsMSw1LjEyLjg0bC0xLjc1LDZhMTcuOTQsMTcuOTQsMCwwLDAtNC4zNC0uNmMtNS45MSwwLTEwLjUsNC40Ni0xMC41LDExWiIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoLTcuNDUgLTkuMSkiPjwvcGF0aD4KICA8cGF0aCBjbGFzcz0iY2xzLTEiIGQ9Ik0xNTQuMzksMjIxYTQuMTgsNC4xOCwwLDAsMSw0LjQxLTQuMjgsNC4zMiw0LjMyLDAsMCwxLDQuNDYsNC40LDQuMTUsNC4xNSwwLDAsMS00LjQ2LDQuMjNBNC4yMyw0LjIzLDAsMCwxLDE1NC4zOSwyMjFabS4zNiw4LjM5SDE2M1YyNTIuNmMwLDEuNDQuMywyLjQ3LDEuNTEsMi40N2E5LDksMCwwLDAsMS41Ny0uMThsMS4yNiw2YTE0LjU2LDE0LjU2LDAsMCwxLTUuNDMsMWMtMy40NCwwLTcuMTItMS03LjEyLTguODFaIiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgtNy40NSAtOS4xKSI+PC9wYXRoPgogIDxwYXRoIGNsYXNzPSJjbHMtMSIgZD0iTTE5OS42NCwyMzQuNDR2LTUuMDdoOC4ydjMxLjc5aC04LjJWMjU2Yy0yLjE4LDMuNjktNi42NCw1LjgtMTIuMDcsNS44LTExLjM0LDAtMTcuNjgtOC0xNy42OC0xNy4yLDAtOC44Nyw2LTE2LDE2LjQ3LTE2QzE5Mi4zNCwyMjguNjUsMTk3LjI4LDIzMC43LDE5OS42NCwyMzQuNDRabS0yMSwxMC42MmMwLDUuODUsMy42OCwxMC44NSwxMC44LDEwLjg1LDYuODgsMCwxMC42Mi00Ljg4LDEwLjYyLTEwLjY3cy0zLjg2LTEwLjc0LTExLTEwLjc0QzE4Mi4yLDIzNC41LDE3OC42NCwyMzkuNDQsMTc4LjY0LDI0NS4wNloiIHRyYW5zZm9ybT0idHJhbnNsYXRlKC03LjQ1IC05LjEpIj48L3BhdGg+CiAgPHBhdGggY2xhc3M9ImNscy0xIiBkPSJNMjIwLjQ0LDIxNy42aDE5LjY3YzE2LjUzLDAsMjQuOCw5LjEyLDI0LjY4LDIxLjc4LjEyLDEzLjE2LTksMjEuNzgtMjMuMjMsMjEuNzhIMjIwLjQ0Wm01LjQzLDMuODd2MzUuODloMTVjMTMuMTUsMCwxOC4xNi04Ljg3LDE4LjE2LTE4LjEsMC0xMC40My02LjI4LTE3Ljc5LTE4LjE2LTE3Ljc5WiIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoLTcuNDUgLTkuMSkiPjwvcGF0aD4KICA8cGF0aCBjbGFzcz0iY2xzLTEiIGQ9Ik0yOTguMzIsMjYxLjE2aC0yNVYyMTcuNmgyMi41YzguNjMsMCwxNi44MywxLjYzLDE2LjcxLDExLjI5LDAsNi44MS00LjIyLDguNjgtOC42OSw5LjQxLDYuMzQuNTQsMTAuMTQsNC41OCwxMC4xNCwxMS4xQzMxNC4wNywyNTkuMTcsMzA1LjUsMjYxLjE2LDI5OC4zMiwyNjEuMTZabS0xLjg3LTI0LjU1YzguNjMsMCwxMC41Ni0zLjMyLDEwLjU2LTcuNTQsMC02LjM0LTMuODYtNy43OS0xMC41Ni03Ljc5SDI3OC41NHYxNS4zM1ptLjI0LDMuNjhIMjc4LjU0djE3LjE5aDE4Ljk0YzUuMzEsMCwxMC45Mi0xLjc1LDEwLjkyLTguNDRDMzA4LjQsMjQxLjMxLDMwMS45NCwyNDAuMjksMjk2LjY5LDI0MC4yOVoiIHRyYW5zZm9ybT0idHJhbnNsYXRlKC03LjQ1IC05LjEpIj48L3BhdGg+CiAgPHBhdGggY2xhc3M9ImNscy0xIiBkPSJNMzE2LDEwLjA1YTQuMiw0LjIsMCwwLDAtMi44NC0xYy0yLjg0LDAtNi41LDEuOTItOC40NiwzbC0uNzkuNGEyNi44MSwyNi44MSwwLDAsMS0xMC41NywyLjY2Yy0zLjc2LjEyLTcsLjM0LTExLjIyLjc3LTI1LDIuNTgtMzYuMTUsMjEuNzQtNDYuODksNDAuMjctNS44NCwxMC4wOC0xMS44OCwyMC41LTIwLjE2LDI4LjU3YTU1LjcxLDU1LjcxLDAsMCwxLTUuNDYsNC42M2MtOC41Nyw2LjM5LTE5LjMzLDEwLjktMjcuNzQsMTQuMTItOC4wNywzLjA4LTE2Ljg2LDUuODUtMjUuMzcsOC41My03Ljc4LDIuNDUtMTUuMTQsNC43Ni0yMS45LDcuMjgtMy4wNSwxLjEzLTUuNjQsMi03LjkzLDIuNzYtNi4xNSwyLTEwLjYsMy41My0xNy4wOCw4LTIuNTMsMS43My01LjA3LDMuNi02LjgsNWE3MS4yNiw3MS4yNiwwLDAsMC0xMy41NCwxNC4yN0E4NC44MSw4NC44MSwwLDAsMSw3Ny44OCwxNjNjLTEuMzYsMS4zNC0zLjgsMi03LjQzLDItNC4yNywwLTkuNDMtLjg4LTE0LjkxLTEuODFzLTExLjQ2LTItMTYuNDYtMmMtNC4wNywwLTcuMTcuNjYtOS41LDIsMCwwLTMuOSwyLjI4LTUuNTYsNS4yM2wxLjYyLjczYTMzLjU2LDMzLjU2LDAsMCwxLDYuOTMsNSwzMy42OCwzMy42OCwwLDAsMCw3LjE5LDUuMTJBNi4zNyw2LjM3LDAsMCwxLDQyLDE4MC43MmMtLjY5LDEtMS42OSwyLjI5LTIuNzQsMy42Ny01Ljc3LDcuNTUtOS4xMywxMi4zMi03LjIsMTQuOTJhNiw2LDAsMCwwLDMsLjY4YzEyLjU5LDAsMTkuMzQtMy4yNywyNy45LTcuNDEsMi40Ny0xLjIsNS0yLjQ0LDgtMy43LDUtMi4xNywxMC4zOC01LjYzLDE2LjA4LTkuMjksNy41NS00Ljg1LDE1LjM2LTkuODcsMjIuOTItMTIuM2E2Mi4zLDYyLjMsMCwwLDEsMTkuMjMtMi43YzgsMCwxNi40MiwxLjA3LDI0LjU0LDIuMTEsNi4wNi43OCwxMi4zMiwxLjU4LDE4LjQ3LDIsMi4zOS4xNCw0LjYuMjEsNi43Ni4yMWE3OC40OCw3OC40OCwwLDAsMCw4LjYxLS40NWwuNjgtLjI0YzQuMzItMi42NSw2LjM0LTguMzQsOC4yOS0xMy44NCwxLjI2LTMuNTQsMi4zMi02LjcyLDQtOC43NGEyLjA2LDIuMDYsMCwwLDEsLjMzLS4yNy40LjQsMCwwLDEsLjQ5LjA4LjI1LjI1LDAsMCwxLDAsLjE2Yy0xLDIxLjUxLTkuNjcsMzUuMTYtMTguNDIsNDcuM0wxNzcsMTk5LjE0czguMTgsMCwxMi44NC0xLjhjMTctNS4wOCwyOS44NC0xNi4yOCwzOS4xOC0zNC4xNGExNDQuMzksMTQ0LjM5LDAsMCwwLDYuMTYtMTQuMDljLjE2LS40LDEuNjQtMS4xNCwxLjQ5LjkzLDAsLjYxLS4wOCwxLjI5LS4xMywyaDBjMCwuNDItLjA2Ljg1LS4wOCwxLjI4LS4yNSwzLTEsOS4zNC0xLDkuMzRsNS4yNS0yLjgxYzEyLjY2LTgsMjIuNDItMjQuMTQsMjkuODItNDkuMjUsMy4wOS0xMC40Niw1LjM0LTIwLjg1LDcuMzMtMzAsMi4zOC0xMSw0LjQzLTIwLjQzLDYuNzgtMjQuMDksMy42OS01Ljc0LDkuMzItOS42MiwxNC43Ny0xMy4zOS43NS0uNTEsMS40OS0xLDIuMjItMS41NCw2Ljg2LTQuODEsMTMuNjctMTAuMzYsMTUuMTYtMjAuNzFsMC0uMjNDMzE3LjkzLDEyLjkyLDMxNywxMSwzMTYsMTAuMDVaIiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgtNy40NSAtOS4xKSI+PC9wYXRoPgo8L3N2Zz4=
+    mediatype: image/svg+xml
+  install:
+    spec:
+      deployments: null
+    strategy: ""
+  installModes:
+  - supported: false
+    type: OwnNamespace
+  - supported: false
+    type: SingleNamespace
+  - supported: false
+    type: MultiNamespace
+  - supported: true
+    type: AllNamespaces
+  keywords:
+  - mariadb
+  - operator
+  links:
+  - name: Mariadb Operator
+    url: https://mariadb-operator.domain
+  maintainers:
+  - email: koray@redhat.com
+    name: Koray Seremet
+  maturity: alpha
+  provider:
+    name: Koray Seremet
+  version: 0.0.0

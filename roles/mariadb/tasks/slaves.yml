@@ -1,0 +1,27 @@
+- set_fact:
+    name_suffix: slave{{idx|int}}
+    memory: "{{ slave_memory }}"
+    cores: "{{ slave_cores }}"
+
+- name: Ensure MariaDB slave VM is created
+  community.kubernetes.k8s:
+    state: present
+    definition: "{{ lookup('template', 'vm.yaml.j2')|from_yaml }}"
+
+- name: Ensure a k8s service with ClusterIP exists to expose given ports
+  community.kubernetes.k8s:
+    state: present
+    definition: "{{ lookup('template', 'service.yaml.j2')|from_yaml }}"
+
+- name: Add new VM into Ansible inventory
+  add_host:
+    hostname: "{{ ansible_operator_meta.name }}-{{ name_suffix }}.{{ ansible_operator_meta.namespace }}"
+    groups:
+    - db
+    - slave
+    ansible_host: "{{ ansible_operator_meta.name }}-{{ name_suffix }}.{{ ansible_operator_meta.namespace }}"
+    ansible_user: "{{ user }}"
+    ansible_ssh_private_key_file: /tmp/{{ ansible_operator_meta.namespace }}_{{ ansible_operator_meta.name }}_id_rsa
+    mysql_server_id: "{{ 99 - idx|int }}"
+    mysql_replication_role: slave
+    mysql_replication_master: "{{ ansible_operator_meta.name }}-master.{{ ansible_operator_meta.namespace }}"

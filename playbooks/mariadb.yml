@@ -1,0 +1,39 @@
+---
+- hosts: localhost
+  gather_facts: no
+  collections:
+    - community.kubernetes
+    - operator_sdk.util
+  tasks:
+    - import_role:
+        name: mariadb
+
+- hosts: db
+  gather_facts: no
+  connection: paramiko
+  tasks:
+    - meta: end_play
+      when: not running
+
+    - name: Wait for network mariadb vm(s) to be reachable
+      wait_for_connection:
+        delay: 1
+        timeout: 300
+
+- hosts: db
+  gather_facts: yes
+  connection: paramiko
+  collections:
+    - community.mysql
+  tasks:
+    - meta: end_play
+      when: not running
+
+    - import_role:
+        name: geerlingguy.mysql
+      vars:
+        mysql_replication_user:
+          name: replication
+          password: secret
+      become: yes
+
